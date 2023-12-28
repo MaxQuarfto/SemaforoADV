@@ -23,9 +23,11 @@ function setup() {
   //console.log(getBrowser());
   parla = new p5.Speech('Google italiano'); // speech synthesis object
   createCanvas(windowWidth, windowHeight);
-  datePreJson= new Date();
-  loadJSON("https://worldtimeapi.org/api/ip", gotData, gotError);
-  waitForServerTime();
+  heartBeat();
+  
+  //datePreJson= new Date();
+  //loadJSON("https://worldtimeapi.org/api/ip", gotData, gotError);
+  //waitForServerTime();
   textSize(height/40);
   let button = createButton('Abilita Audio');
   button.position(width/16*9, height/10*6.4);
@@ -82,8 +84,8 @@ function draw() {
     parla.speak(scritta);
   }
   if(errorMessage){
-    scriviMessaggio(errorMessage,"red",height/40,40);
-    console.log("error message: ",errorMessage);
+    scriviMessaggio(errorMessage,"red",height/40,height/10);
+    //console.log("error message: ",errorMessage);
   } 
   debug();
 }
@@ -104,22 +106,19 @@ function heartBeat(){
 }
 
 function gotData(data) {
-  //console.log("GOTDATA");
   serverTime = data.unixtime;
-  //datePostJson= new Date();
-  //dateAdj=(datePostJson-datePreJson);
-  
-  //date=datePostJson-dateAdj;
+  datePostJson= new Date();
+  timeLoadJson=(datePostJson-datePreJson);
+  console.log("Server time definito: ",convertUnixTime(serverTime), "tempo loadJSON: ",timeLoadJson);
+  if(timeLoadJson > 1000){ //più di 1 secondo nel caricare il JSON
+    gotServerTime=0;
+    errorMessage='Eccesso di tempo nel caricare Json :'+timeLoadJson+' ms';
+  }
 
   date = new Date();
   localTime = round(date.getTime() / 1000);
-  
-  //console.log(datePreJson,datePostJson,dateAdj);
-  
-  //if(abs(localTime-serverTime)>2) { //max di 3 secondi di discrepanza
-  if(abs(localTime-serverTime)<130) { //max di 3 secondi di discrepanza
+  if(abs(localTime-serverTime)<120) { //max di 2 minuti di discrepanza
     dateAdj=localTime-serverTime;
-    //console.log("date adj ",convertUnixTime(localTime),convertUnixTime(serverTime),dateAdj)
     gotServerTime=1;
     errorMessage="";
   }else{
@@ -130,7 +129,6 @@ function gotData(data) {
     //" Server: "+ convertUnixTime(serverTime));  
    }
   setTimeout(heartBeat, 10000); // Adjust the time interval as needed
-
 }
 
 function gotError() {
@@ -142,7 +140,7 @@ function gotError() {
 
 function waitForServerTime() {
   if (typeof serverTime !== 'undefined') {
-    console.log("Server time definito: ",convertUnixTime(serverTime));
+ //   console.log("Server time definito: ",convertUnixTime(serverTime));
   } else {
     console.log("waiting for ServerTime to be defined");
     errorMessage="waiting for ServerTime to be defined";
@@ -150,18 +148,9 @@ function waitForServerTime() {
   }
 }
 
-function semaforo(){
-  
+function semaforo(){  
   if(!gotServerTime)return;
-    
-  //let time = Date.now();
-    
   time = Date.now()-dateAdj*1000;
-  //textSize(height/50);
-  //fill(130);
-  //text("Loc: "+convertUnixTime(Date.now()/1000)+" Rem "+convertUnixTime(time/1000)+" "+dateAdj,width/2,height/20*17);
-  
-  
   finestra=(time%((verdeSalita+rosso+verdeDiscesa+rosso)*1000))/1000;
   if (Math.floor(finestra) < verdeSalita){messaggio="sali";}
   if (Math.floor(finestra) >= verdeSalita && Math.floor(finestra) < verdeSalita+rosso ){messaggio="aspetta";}
