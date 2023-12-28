@@ -20,11 +20,9 @@ function preload(){
 }
   
 function setup() {
-  console.log(getBrowser());
+  //console.log(getBrowser());
   parla = new p5.Speech('Google italiano'); // speech synthesis object
   createCanvas(windowWidth, windowHeight);
-  textAlign(CENTER);
-  ellipseMode(CENTER);
   datePreJson= new Date();
   loadJSON("https://worldtimeapi.org/api/ip", gotData, gotError);
   waitForServerTime();
@@ -34,13 +32,23 @@ function setup() {
   button.style('background-color', "pink");
   button.style('font-size', height/40+'px');
   button.size(width/4, height/15);
- }
+
+  let buttonW = createButton('Salite e scendete con attenzione. Potreste incontrare uno senza applicazione!!');
+  buttonW.position(5, height/11*2);
+  buttonW.style('background-color', "red");
+  buttonW.style('font-size', height/50+'px');
+  buttonW.size(width/2, height/10);
+  textAlign(CENTER);
+  ellipseMode(CENTER);
+
+
+}
 
 function draw() {
   background(150,150,200);  
   image(logo,0,0,width/4,width/4);
   disegnaSemaforo(width/16*9,height/10,colAltoSemSu,colCentroSemSu,colBassoSemSu,'MONTE');
-  disegnaSemaforo(width/16*3,height/10*3,colAltoSemGiu,colCentroSemGiu,colBassoSemGiu,'VALLE');
+  disegnaSemaforo(width/16*4,height/10*3,colAltoSemGiu,colCentroSemGiu,colBassoSemGiu,'VALLE');
   statoSem=semaforo();
   if (statoSem =="arancione"||gotServerTime==0 ) {
     coloreScritta="red";
@@ -188,77 +196,6 @@ var seconds = "0" + date.getSeconds();
 var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
 return(formattedTime);
 }
-
-function getBrowser(){
-  var nVer = navigator.appVersion;
-  var nAgt = navigator.userAgent;
-  var browserName  = navigator.appName;
-  var fullVersion  = ''+parseFloat(navigator.appVersion); 
-  var majorVersion = parseInt(navigator.appVersion,10);
-  var nameOffset,verOffset,ix;
-
-  // In Opera, the true version is after "OPR" or after "Version"
-  if ((verOffset=nAgt.indexOf("OPR"))!=-1) {
-    browserName = "Opera";
-    fullVersion = nAgt.substring(verOffset+4);
-  if ((verOffset=nAgt.indexOf("Version"))!=-1) 
-    fullVersion = nAgt.substring(verOffset+8);
-  }    
-  // In MS Edge, the true version is after "Edg" in userAgent
-  else if ((verOffset=nAgt.indexOf("Edg"))!=-1) {
-    browserName = "Microsoft Edge";
-    fullVersion = nAgt.substring(verOffset+4);
-  }
-  // In MSIE, the true version is after "MSIE" in userAgent
-  else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
-    browserName = "Microsoft Internet Explorer";
-    fullVersion = nAgt.substring(verOffset+5);
-  }
-  // In Chrome, the true version is after "Chrome" 
-  else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
-    browserName = "Chrome";
-    fullVersion = nAgt.substring(verOffset+7);
-  }
-  // In Safari, the true version is after "Safari" or after "Version" 
-  else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
-    browserName = "Safari";
-    fullVersion = nAgt.substring(verOffset+7);
-    if ((verOffset=nAgt.indexOf("Version"))!=-1) 
-      fullVersion = nAgt.substring(verOffset+8);
-  }
-  // In Firefox, the true version is after "Firefox" 
-  else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
-    browserName = "Firefox";
-    fullVersion = nAgt.substring(verOffset+8);
-  }
-  // In most other browsers, "name/version" is at the end of userAgent 
-  else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < (verOffset=nAgt.lastIndexOf('/')) ) {
-    browserName = nAgt.substring(nameOffset,verOffset);
-    fullVersion = nAgt.substring(verOffset+1);
-    if (browserName.toLowerCase()==browserName.toUpperCase()) {
-      browserName = navigator.appName;
-    }
-  }
-  // trim the fullVersion string at semicolon/space if present
-  if ((ix=fullVersion.indexOf(";"))!=-1)
-    fullVersion=fullVersion.substring(0,ix);
-  if ((ix=fullVersion.indexOf(" "))!=-1)
-    fullVersion=fullVersion.substring(0,ix);
-  majorVersion = parseInt(''+fullVersion,10);
-  if (isNaN(majorVersion)) {
-    fullVersion  = ''+parseFloat(navigator.appVersion); 
-    majorVersion = parseInt(navigator.appVersion,10);
-  }
-  return('Browser '+browserName+'Ver.'+fullVersion+'Maj '+majorVersion+'Nav app '+
-       navigator.appName+'Nav UA '+navigator.userAgent);
- //+'Browser name  = '+browserName+'<br>'
- //+'Full version  = '+fullVersion+'<br>'
- //+'Major version = '+majorVersion+'<br>'
- //+'navigator.appName = '+navigator.appName+'<br>'
- //+'navigator.userAgent = '+navigator.userAgent+'<br>'
-//)
-
-}  
 
 function debug(){
   push();
