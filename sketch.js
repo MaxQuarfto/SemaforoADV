@@ -13,7 +13,7 @@ let time;
 let errorMessage;
 let parla;
 let logo;
-let datePreJson; let datePostJson; let dateAdj;
+let datePreJson; let datePostJson; let dateAdj; let timeLoadJson;
 
 function preload(){
   logo=loadImage("LogoADVtrasp.png");
@@ -190,7 +190,7 @@ function debug(){
   push();
   textSize(height/50);
   fill(130);
-  text("Loc: "+convertUnixTime(Date.now()/1000)+" Rem "+convertUnixTime(time/1000)+" "+dateAdj,width/2,height/20*17);
+  text("Loc: "+convertUnixTime(Date.now()/1000)+" Rem "+convertUnixTime(time/1000)+" adj "+dateAdj+" loadJson "+timeLoadJson,width/2,height/20*17);
   textSize(height/60);
   textAlign(LEFT);
   //console.log(info());
