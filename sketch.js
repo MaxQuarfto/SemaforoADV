@@ -33,7 +33,7 @@ function setup() {
   button.style('font-size', height/40+'px');
   button.size(width/4, height/15);
 
-  let buttonW = createButton('Salite e scendete con attenzione. Potreste incontrare uno senza applicazione!!');
+  let buttonW = createButton('Salite e scendete con attenzione. Potreste incontrare qualcuno senza applicazione!!');
   buttonW.position(5, height/11*2);
   buttonW.style('background-color', "red");
   buttonW.style('font-size', height/50+'px');
