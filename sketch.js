@@ -1,4 +1,4 @@
-const verdeSalita=verdeDiscesa=10; //tempo di semaforo verdeDiscesa in secondi
+const verdeSalita=verdeDiscesa=8; //tempo di semaforo verdeDiscesa in secondi
 const rosso=60; //tempo per percorrere il tratto in secondi
 
 let statoSem="arancione";
@@ -15,6 +15,8 @@ let parla;
 let logo;
 let datePreJson; let datePostJson; let dateAdj; let timeLoadJson;
 let blink=0;
+let attesaSalita; let attesaDiscesa; let finestra;
+
 function preload(){
   logo=loadImage("LogoADVtrasp.png");
 }
@@ -59,8 +61,8 @@ function draw() {
     background(150,150,200);  
   }
   image(logo,0,0,width/4,width/4);
-  disegnaSemaforo(width/16*9,height/10,colAltoSemSu,colCentroSemSu,colBassoSemSu,'MONTE');
-  disegnaSemaforo(width/16*4,height/10*3,colAltoSemGiu,colCentroSemGiu,colBassoSemGiu,'VALLE');
+  disegnaSemaforo(width/16*9,height/10,colAltoSemSu,colCentroSemSu,colBassoSemSu,'MONTE',attesaDiscesa);
+  disegnaSemaforo(width/16*4,height/10*3,colAltoSemGiu,colCentroSemGiu,colBassoSemGiu,'VALLE',attesaSalita);
   statoSem=semaforo();
   if (statoSem =="arancione"||gotServerTime==0 ) {
     coloreScritta="red";
@@ -164,14 +166,22 @@ function semaforo(){
   time = Date.now()-dateAdj*1000;
   finestra=(time%((verdeSalita+rosso+verdeDiscesa+rosso)*1000))/1000;
   if (Math.floor(finestra) < verdeSalita){messaggio="sali";}
-  if (Math.floor(finestra) >= verdeSalita && Math.floor(finestra) < verdeSalita+rosso ){messaggio="aspetta";}
+  if (Math.floor(finestra) >= verdeSalita && Math.floor(finestra) < verdeSalita+rosso ){
+    messaggio="aspetta";
+  }
   if (Math.floor(finestra) >= verdeSalita+rosso && Math.floor(finestra) < verdeSalita+rosso+verdeDiscesa ){messaggio="scendi";}
   if (Math.floor(finestra) >= verdeSalita+rosso+verdeDiscesa ){messaggio="aspetta";}
+  if(Math.floor(finestra)<verdeSalita+rosso){
+    attesaDiscesa=verdeSalita+rosso-Math.floor(finestra);
+  }else{
+    attesaDiscesa=verdeSalita+rosso+(verdeSalita+rosso+verdeDiscesa+rosso-Math.floor(finestra));
+  }
+  attesaSalita=((verdeSalita+rosso+verdeDiscesa+rosso)) - Math.floor(finestra);
   return messaggio;
 }
 
-function disegnaSemaforo(x,y,colAlto,colMezzo,colBasso,descrizione) {
-  fill("darkbrown"); //grey color
+function disegnaSemaforo(x,y,colAlto,colMezzo,colBasso,descrizione,tempoAttesa) {
+  fill("darkGreen"); //grey color
   larghezza=width/4;
   altezza=height/2.5;
   rect(x, y, larghezza,altezza, 20);//traffic light base 
@@ -183,7 +193,7 @@ function disegnaSemaforo(x,y,colAlto,colMezzo,colBasso,descrizione) {
   ellipse(x+larghezza/2, y+altezza/4*3,larghezza/2.1,larghezza/2.1);//third code
   textSize(height/40);
   fill("orange");
-  text(descrizione,x+larghezza/2,y+altezza/10)
+  text(descrizione+" "+ tempoAttesa,x+larghezza/2,y+altezza/10)
 }
 
 function convertUnixTime(uTime) {
@@ -205,7 +215,7 @@ function debug(){
   textSize(height/60);
   textAlign(LEFT);
   //console.log(info());
-  text('v1.0 '+info(),5,height/30*28,width,height/3);
+  text('v 2.0   '+info(),5,height/30*28,width,height/3);
   //text('v1.0 '+getBrowserEX(),0,height/30*29,width,height/30);
   pop();
 }  
