@@ -1,4 +1,4 @@
-const verdeSalita=verdeDiscesa=5; //tempo di semaforo verdeDiscesa in secondi
+const verdeSalita=verdeDiscesa=10; //tempo di semaforo verdeDiscesa in secondi
 const rosso=60; //tempo per percorrere il tratto in secondi
 
 let statoSem="arancione";
@@ -92,7 +92,7 @@ function draw() {
     statoSemOld=statoSem;
     parla.setVoice(4);
     parla.speak(scritta);
-    blink=180;
+    blink=50;
   }
   if(errorMessage){
     scriviMessaggio(errorMessage,"red",height/40,height/10);
