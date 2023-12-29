@@ -45,8 +45,6 @@ function setup() {
   buttonW.size(width/2, height/10);
   textAlign(CENTER);
   ellipseMode(CENTER);
-
-
 }
 
 function draw() {
@@ -94,7 +92,7 @@ function draw() {
     statoSemOld=statoSem;
     parla.setVoice(4);
     parla.speak(scritta);
-    blink=50;
+    blink=30;
   }
   if(errorMessage){
     scriviMessaggio(errorMessage,"red",height/40,height/10);
