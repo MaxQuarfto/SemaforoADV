@@ -1,5 +1,5 @@
 const verdeSalita=verdeDiscesa=5; //tempo di semaforo verdeDiscesa in secondi
-const rosso=80; //tempo per percorrere il tratto in secondi
+const rosso=60; //tempo per percorrere il tratto in secondi
 
 let statoSem="arancione";
 let statoSemOld="arancione";
@@ -14,7 +14,7 @@ let errorMessage;
 let parla;
 let logo;
 let datePreJson; let datePostJson; let dateAdj; let timeLoadJson;
-
+let blink=0;
 function preload(){
   logo=loadImage("LogoADVtrasp.png");
 }
@@ -26,7 +26,6 @@ function setup() {
   parla.setLang("it-IT");
   createCanvas(windowWidth, windowHeight);
   heartBeat();
-  
   //datePreJson= new Date();
   //loadJSON("https://worldtimeapi.org/api/ip", gotData, gotError);
   //waitForServerTime();
@@ -49,7 +48,16 @@ function setup() {
 }
 
 function draw() {
-  background(150,150,200);  
+  if(blink >1){
+    blink=blink-1;
+    if(blink % 2 ==1 ){
+      background(0);  
+    }else {
+      background(255);  
+    }
+  }else {
+    background(150,150,200);  
+  }
   image(logo,0,0,width/4,width/4);
   disegnaSemaforo(width/16*9,height/10,colAltoSemSu,colCentroSemSu,colBassoSemSu,'MONTE');
   disegnaSemaforo(width/16*4,height/10*3,colAltoSemGiu,colCentroSemGiu,colBassoSemGiu,'VALLE');
@@ -84,6 +92,7 @@ function draw() {
     statoSemOld=statoSem;
     parla.setVoice(4);
     parla.speak(scritta);
+    blink=180;
   }
   if(errorMessage){
     scriviMessaggio(errorMessage,"red",height/40,height/10);
