@@ -1,5 +1,5 @@
 const verdeSalita=verdeDiscesa=5; //tempo di semaforo verdeDiscesa in secondi
-const rosso=10; //tempo per percorrere il tratto in secondi
+const rosso=80; //tempo per percorrere il tratto in secondi
 
 let statoSem="arancione";
 let statoSemOld="arancione";
@@ -21,7 +21,9 @@ function preload(){
   
 function setup() {
   //console.log(getBrowser());
-  parla = new p5.Speech('Google italiano'); // speech synthesis object
+
+  parla = new p5.Speech(); // speech synthesis object
+  parla.setLang("it-IT");
   createCanvas(windowWidth, windowHeight);
   heartBeat();
   
