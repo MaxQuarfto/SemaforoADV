@@ -30,12 +30,12 @@ function changeOrien(e){
     alt=altOrig;
     console.log("port");
   } else {
-    alt=larghOrig;
-    largh=larghOrig*larghOrig/altOrig;
+    alt=larghOrig*0.8;
+    largh=larghOrig*larghOrig/altOrig*0.8;
     console.log("land");
   }
   //createCanvas(largh,alt);
-  console.log(largh,alt,windowWidth,windowHeight);
+  console.log(largh,alt,windowWidth,windowHeight,larghOrig,altOrig);
 }
 
 function setup() {
@@ -233,7 +233,7 @@ function debug(){
   text("Loc: "+convertUnixTime(Date.now()/1000)+" Rem "+convertUnixTime(time/1000)+" adj "+dateAdj+" loadJson "+timeLoadJson,largh/2,alt/20*17);
   textSize(alt/60);
   textAlign(LEFT);
-  text('v 3.0  '+screen.orientation.type+" "+info(),5,alt/30*28,largh,alt/3);
+  text('v 4.0  '+screen.orientation.type+" "+info(),5,alt/30*28,largh,alt/3);
   pop();
 }  
 
