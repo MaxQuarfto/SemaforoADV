@@ -235,7 +235,7 @@ function debug(){
   text("Loc: "+convertUnixTime(Date.now()/1000)+" Rem "+convertUnixTime(time/1000)+" adj "+dateAdj+" loadJson "+timeLoadJson,largh/2,alt/20*17);
   textSize(alt/60);
   textAlign(LEFT);
-  text('v 2.0  '+screen.orientation.type+" "+info(),5,alt/30*28,largh,alt/3);
+  text('v 3.0  '+screen.orientation.type+" "+info(),5,alt/30*28,largh,alt/3);
   pop();
 }  
 
