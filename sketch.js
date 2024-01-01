@@ -16,7 +16,8 @@ let logo;
 let datePreJson; let datePostJson; let dateAdj; let timeLoadJson;
 let blink=0;
 let attesaSalita; let attesaDiscesa; let finestra;
-let largh; let alt;
+let largh; let alt; let orient="portrait";
+let larghOrig; let altOrig;
 
 function preload(){
   logo=loadImage("LogoADVtrasp.png");
@@ -25,30 +26,27 @@ function preload(){
 function changeOrien(e){
   const portrait = e.matches;
   if (portrait) {
-    largh=windowWidth;
-    alt=windowHeight;
-    console.log("port ",e);
-    // do something
-    } else {
-      alt=windowWidth;
-      largh=windowWidth*windowHeight/windowWidth;
-      console.log("else ",e);
-      // do something else
-    }
-  };
-
+    largh=larghOrig;
+    alt=altOrig;
+    console.log("port");
+  } else {
+    alt=larghOrig;
+    largh=larghOrig*larghOrig/altOrig;
+    console.log("land");
+  }
+  //createCanvas(largh,alt);
+  console.log(largh,alt,windowWidth,windowHeight);
+}
 
 function setup() {
-  
-  
   window.matchMedia("(orientation: portrait)").addEventListener("change", changeOrien);
-  
-  //screen.orientation.addEventListener("change", cambioOrient(e));
   parla = new p5.Speech(); // speech synthesis object
   parla.setLang("it-IT");
   createCanvas(windowWidth, windowHeight);
   largh=windowWidth;
   alt=windowHeight;
+  larghOrig=windowWidth;
+  altOrig=windowHeight;
 
   heartBeat();
   //datePreJson= new Date();
@@ -143,7 +141,7 @@ function gotData(data) {
   serverTime = data.unixtime;
   datePostJson= new Date();
   timeLoadJson=(datePostJson-datePreJson);
-  console.log("Server time definito: ",convertUnixTime(serverTime), "tempo loadJSON: ",timeLoadJson);
+  //console.log("Server time definito: ",convertUnixTime(serverTime), "tempo loadJSON: ",timeLoadJson);
   if(timeLoadJson > 1000){ //più di 1 secondo nel caricare il JSON
     gotServerTime=0;
     errorMessage='Eccesso di tempo nel caricare Json :'+timeLoadJson+' ms';
@@ -176,7 +174,7 @@ function waitForServerTime() {
   if (typeof serverTime !== 'undefined') {
  //   console.log("Server time definito: ",convertUnixTime(serverTime));
   } else {
-    console.log("waiting for ServerTime to be defined");
+    //console.log("waiting for ServerTime to be defined");
     errorMessage="waiting for ServerTime to be defined";
     setTimeout(waitForServerTime, 1000); // Adjust the time interval as needed
   }
