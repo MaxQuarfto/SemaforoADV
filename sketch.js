@@ -16,33 +16,56 @@ let logo;
 let datePreJson; let datePostJson; let dateAdj; let timeLoadJson;
 let blink=0;
 let attesaSalita; let attesaDiscesa; let finestra;
+let largh; let alt;
 
 function preload(){
   logo=loadImage("LogoADVtrasp.png");
 }
-  
-function setup() {
-  //console.log(getBrowser());
 
+function changeOrien(e){
+  const portrait = e.matches;
+  if (portrait) {
+    largh=windowWidth;
+    alt=windowHeight;
+    console.log("port ",e);
+    // do something
+    } else {
+      alt=windowWidth;
+      largh=windowWidth*windowHeight/windowWidth;
+      console.log("else ",e);
+      // do something else
+    }
+  };
+
+
+function setup() {
+  
+  
+  window.matchMedia("(orientation: portrait)").addEventListener("change", changeOrien);
+  
+  //screen.orientation.addEventListener("change", cambioOrient(e));
   parla = new p5.Speech(); // speech synthesis object
   parla.setLang("it-IT");
   createCanvas(windowWidth, windowHeight);
+  largh=windowWidth;
+  alt=windowHeight;
+
   heartBeat();
   //datePreJson= new Date();
   //loadJSON("https://worldtimeapi.org/api/ip", gotData, gotError);
   //waitForServerTime();
-  textSize(height/40);
+  textSize(alt/40);
   let button = createButton('Abilita Audio');
-  button.position(width/16*9, height/10*6.4);
+  button.position(largh/16*9, alt/10*6.4);
   button.style('background-color', "pink");
-  button.style('font-size', height/40+'px');
-  button.size(width/4, height/15);
+  button.style('font-size', alt/40+'px');
+  button.size(largh/4, alt/15);
 
   let buttonW = createButton('Salite e scendete con attenzione. Potreste incontrare qualcuno senza applicazione!!');
-  buttonW.position(5, height/11*2);
+  buttonW.position(5, alt/11*2);
   buttonW.style('background-color', "red");
-  buttonW.style('font-size', height/50+'px');
-  buttonW.size(width/2, height/10);
+  buttonW.style('font-size', alt/50+'px');
+  buttonW.size(largh/2, alt/10);
   textAlign(CENTER);
   ellipseMode(CENTER);
 }
@@ -58,9 +81,9 @@ function draw() {
   }else {
     background(150,150,200);  
   }
-  image(logo,0,0,width/4,width/4);
-  disegnaSemaforo(width/16*9,height/10,colAltoSemSu,colCentroSemSu,colBassoSemSu,'MONTE',attesaDiscesa);
-  disegnaSemaforo(width/16*4,height/10*3,colAltoSemGiu,colCentroSemGiu,colBassoSemGiu,'VALLE',attesaSalita);
+  image(logo,0,0,largh/4,largh/4);
+  disegnaSemaforo(largh/16*9,alt/10,colAltoSemSu,colCentroSemSu,colBassoSemSu,'MONTE',attesaDiscesa);
+  disegnaSemaforo(largh/16*4,alt/10*3,colAltoSemGiu,colCentroSemGiu,colBassoSemGiu,'VALLE',attesaSalita);
   statoSem=semaforo();
   if (statoSem =="arancione"||gotServerTime==0 ) {
     coloreScritta="red";
@@ -87,7 +110,7 @@ function draw() {
       colAltoSemGiu="red"; colCentroSemGiu="black"; colBassoSemGiu="black";
     }
   }
-  scriviMessaggio(scritta,coloreScritta,height/40);
+  scriviMessaggio(scritta,coloreScritta,alt/40);
   if(statoSem!=statoSemOld) {
     statoSemOld=statoSem;
     parla.setVoice(4);
@@ -95,7 +118,7 @@ function draw() {
     blink=30;
   }
   if(errorMessage){
-    scriviMessaggio(errorMessage,"red",height/40,height/10);
+    scriviMessaggio(errorMessage,"red",alt/40,alt/10);
     //console.log("error message: ",errorMessage);
   } 
   debug();
@@ -103,11 +126,11 @@ function draw() {
 
 function scriviMessaggio(scritta,coloreScritta,size,deltaY=0){
   fill(100);
-  rect(width/4, height/20*15, width/2, height/20,10);
+  rect(largh/4, alt/20*15, largh/2, alt/20,10);
   textSize(size);
   textStyle(BOLD);
   fill(coloreScritta);
-  text(scritta, width/2, height/20*15.7+deltaY);
+  text(scritta, largh/2, alt/20*15.7+deltaY);
 }
 
 function heartBeat(){
@@ -180,8 +203,8 @@ function semaforo(){
 
 function disegnaSemaforo(x,y,colAlto,colMezzo,colBasso,descrizione,tempoAttesa) {
   fill("darkGreen"); //grey color
-  larghezza=width/4;
-  altezza=height/2.5;
+  larghezza=largh/4;
+  altezza=alt/2.5;
   rect(x, y, larghezza,altezza, 20);//traffic light base 
   fill(colAlto);
   ellipse(x+larghezza/2, y+altezza/4,larghezza/2.1,larghezza/2.1);//first light
@@ -189,7 +212,7 @@ function disegnaSemaforo(x,y,colAlto,colMezzo,colBasso,descrizione,tempoAttesa) 
   ellipse(x+larghezza/2, y+altezza/4*2,larghezza/2.1,larghezza/2.1);//second light
   fill(colBasso);
   ellipse(x+larghezza/2, y+altezza/4*3,larghezza/2.1,larghezza/2.1);//third code
-  textSize(height/40);
+  textSize(alt/40);
   fill("orange");
   text(descrizione+" "+ tempoAttesa,x+larghezza/2,y+altezza/10)
 }
@@ -207,13 +230,14 @@ return(formattedTime);
 
 function debug(){
   push();
-  textSize(height/50);
+  textSize(alt/50);
   fill(130);
-  text("Loc: "+convertUnixTime(Date.now()/1000)+" Rem "+convertUnixTime(time/1000)+" adj "+dateAdj+" loadJson "+timeLoadJson,width/2,height/20*17);
-  textSize(height/60);
+  text("Loc: "+convertUnixTime(Date.now()/1000)+" Rem "+convertUnixTime(time/1000)+" adj "+dateAdj+" loadJson "+timeLoadJson,largh/2,alt/20*17);
+  textSize(alt/60);
   textAlign(LEFT);
-  //console.log(info());
-  text('v 2.0   '+info(),5,height/30*28,width,height/3);
-  //text('v1.0 '+getBrowserEX(),0,height/30*29,width,height/30);
+  text('v 2.0  '+screen.orientation.type+" "+info(),5,alt/30*28,largh,alt/3);
   pop();
 }  
+
+
+
