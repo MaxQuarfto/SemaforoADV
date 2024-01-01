@@ -30,11 +30,11 @@ function changeOrien(e){
     alt=altOrig;
     console.log("port");
   } else {
-    alt=larghOrig*0.8;
     largh=larghOrig*larghOrig/altOrig*0.8;
+    alt=larghOrig*0.8;
     console.log("land");
   }
-  //createCanvas(largh,alt);
+  createCanvas(largh,alt);
   console.log(largh,alt,windowWidth,windowHeight,larghOrig,altOrig);
 }
 
