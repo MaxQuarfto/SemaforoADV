@@ -175,8 +175,7 @@ function info() {
     };
     //console.log(window.browserInfo);
     return(window.browserInfo.browser+" v "+window.browserInfo.browserVersion+' mobile '+window.browserInfo.mobile+
-    ' os '+window.browserInfo.os+' v '+window.browserInfo.osVersion+' cookieEn '+window.browserInfo.coockieEnabled+
-    ' size '+window.browserInfo.screen);
+    ' os '+window.browserInfo.os+' v '+window.browserInfo.osVersion+' size '+window.browserInfo.screen);
   
 }
 
