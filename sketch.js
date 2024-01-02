@@ -34,7 +34,7 @@ function changeOrien(e){
     alt=larghOrig*0.8;
     console.log("land");
   }
-  createCanvas(largh,alt);
+  resizeCanvas(largh,alt);
   console.log(largh,alt,windowWidth,windowHeight,larghOrig,altOrig);
 }
 
