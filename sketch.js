@@ -1,5 +1,7 @@
 const verdeSalita=verdeDiscesa=8; //tempo di semaforo verdeDiscesa in secondi
 const rosso=60; //tempo per percorrere il tratto in secondi
+let buttonAudio; 
+let buttonW;
 
 let statoSem="arancione";
 let statoSemOld="arancione";
@@ -23,6 +25,8 @@ function preload(){
   logo=loadImage("LogoADVtrasp.png");
 }
 
+
+
 function changeOrien(e){
   const portrait = e.matches;
   if (portrait) {
@@ -35,6 +39,16 @@ function changeOrien(e){
     console.log("land");
   }
   resizeCanvas(largh,alt);
+  buttonW.position(5, alt/11*2);
+  buttonW.style('background-color', "red");
+  buttonW.style('font-size', alt/50+'px');
+  buttonW.size(largh/2, alt/10);
+  
+  buttonAudio.position(largh/16*9, alt/10*6.4);
+  buttonAudio.style('background-color', "pink");
+  buttonAudio.style('font-size', alt/40+'px');
+  buttonAudio.size(largh/4, alt/15);
+  
   console.log(largh,alt,windowWidth,windowHeight,larghOrig,altOrig);
 }
 
@@ -53,13 +67,20 @@ function setup() {
   //loadJSON("https://worldtimeapi.org/api/ip", gotData, gotError);
   //waitForServerTime();
   textSize(alt/40);
-  let button = createButton('Abilita Audio');
-  button.position(largh/16*9, alt/10*6.4);
-  button.style('background-color', "pink");
-  button.style('font-size', alt/40+'px');
-  button.size(largh/4, alt/15);
+  
+  buttonAudio = createButton("Abilita Audio");
+  buttonAudio.position(largh/16*9, alt/10*6.4);
+  buttonAudio.style('background-color', "pink");
+  buttonAudio.style('font-size', alt/40+'px');
+  buttonAudio.size(largh/4, alt/15);
+  //drawButton();
+  
+  //button.position(largh/16*9, alt/10*6.4);
+  //button.style('background-color', "pink");
+  //button.style('font-size', alt/40+'px');
+  //button.size(largh/4, alt/15);
 
-  let buttonW = createButton('Salite e scendete con attenzione. Potreste incontrare qualcuno senza applicazione!!');
+  buttonW = createButton('Salite e scendete con attenzione. Potreste incontrare qualcuno senza applicazione!!');
   buttonW.position(5, alt/11*2);
   buttonW.style('background-color', "red");
   buttonW.style('font-size', alt/50+'px');
@@ -236,6 +257,4 @@ function debug(){
   text('v 4.0  '+screen.orientation.type+" "+info(),5,alt/30*28,largh,alt/3);
   pop();
 }  
-
-
 
