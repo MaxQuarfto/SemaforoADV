@@ -357,12 +357,6 @@ function debug() {
   );
   textSize(alt / 60);
   textAlign(LEFT);
-  text(
-    "v 5.0  " + screen.orientation.type + " " + info(),
-    5,
-    (alt / 30) * 28,
-    largh,
-    alt / 3
-  );
+  text("v 5.0 larg "+largh+" alt "+alt + " "+screen.orientation.type + " " + info(),5,(alt/30) * 28,largh, alt/3);
   pop();
 }
