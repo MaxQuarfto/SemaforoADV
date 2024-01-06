@@ -81,7 +81,7 @@ function setup() {
   bottCambiaNome = createButton("Cambia Nome");
   bottCambiaNome.position(largh/4, alt/7.5);
   bottCambiaNome.style("background-color", "darkorange");
-  bottCambiaNome.style("font-size", alt / 50 + "px");
+  bottCambiaNome.style("font-size", alt / 60 + "px");
   bottCambiaNome.size(largh/4,alt/30);
   bottCambiaNome.mousePressed(cambiaNome);
   
@@ -350,7 +350,6 @@ function debug() {
 function cambiaNome() {
   nome = prompt("Come ti chiami?");
   storeItem("Nome", nome);
-  console.log("Cambia nome");
 }
 
 function MqttStatus() {
