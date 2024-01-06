@@ -1,5 +1,5 @@
-const verdeSalita = (verdeDiscesa = 8); //tempo di semaforo verdeDiscesa in secondi
-const rosso = 60; //tempo per percorrere il tratto in secondi
+const verdeSalita = (verdeDiscesa = 10); //tempo di semaforo verdeDiscesa in secondi
+const rosso = 50; //tempo per percorrere il tratto in secondi
 let buttonAudio;
 let buttonW;
 
@@ -33,35 +33,20 @@ let orient = "portrait";
 let larghOrig;
 let altOrig;
 
+let gotMqtt = false; //lo stato della connessione mqtt
+let gotMqttPrev = false;
+
+let nome = "";
+let bottCambiaNome;
+//let nomeAllGhiaccio;
+let etichettaGhiaccio = "Ghiaccio";
+let etichettaTrattore = "Trattore";
+
+//var client = mqtt.connect("wss://test.mosquitto.org:8081/mqtts", {connectTimeout: 3000,keepalive: 10});
+var client = mqtt.connect("wss://test.mosquitto.org:8081/mqtts", {keepalive: 10,});
+
 function preload() {
   logo = loadImage("LogoADVtrasp.png");
-}
-
-function changeOrien(e) {
-  const portrait = e.matches;
-  if (portrait) {
-    largh = larghOrig;
-    alt = altOrig;
-    console.log("port");
-  } else {
-    //largh=larghOrig*larghOrig/altOrig*0.7;
-    //alt=larghOrig*0.7;
-    largh = (windowHeight * altOrig) / larghOrig;
-    alt = windowHeight;
-    console.log("land");
-  }
-  resizeCanvas(largh, alt);
-  buttonW.position(5, (alt / 11) * 2);
-  buttonW.style("background-color", "red");
-  buttonW.style("font-size", alt / 50 + "px");
-  buttonW.size(largh / 2, alt / 10);
-
-  buttonAudio.position((largh / 16) * 9, (alt / 10) * 6.4);
-  buttonAudio.style("background-color", "pink");
-  buttonAudio.style("font-size", alt / 40 + "px");
-  buttonAudio.size(largh / 4, alt / 15);
-
-  console.log(largh, alt, windowWidth, windowHeight, larghOrig, altOrig);
 }
 
 function setup() {
@@ -77,22 +62,13 @@ function setup() {
   altOrig = windowHeight;
 
   heartBeat();
-  //datePreJson= new Date();
-  //loadJSON("https://worldtimeapi.org/api/ip", gotData, gotError);
-  //waitForServerTime();
   textSize(alt / 40);
 
   buttonAudio = createButton("Abilita Audio");
-  buttonAudio.position((largh / 16) * 9, (alt / 10) * 6.4);
+  buttonAudio.position((largh / 16) * 9, (alt / 12) * 6.5);
   buttonAudio.style("background-color", "pink");
   buttonAudio.style("font-size", alt / 40 + "px");
   buttonAudio.size(largh / 4, alt / 15);
-  //drawButton();
-
-  //button.position(largh/16*9, alt/10*6.4);
-  //button.style('background-color', "pink");
-  //button.style('font-size', alt/40+'px');
-  //button.size(largh/4, alt/15);
 
   buttonW = createButton(
     "Salite e scendete con attenzione. Potreste incontrare qualcuno senza applicazione!!"
@@ -101,6 +77,29 @@ function setup() {
   buttonW.style("background-color", "red");
   buttonW.style("font-size", alt / 50 + "px");
   buttonW.size(largh / 2, alt / 10);
+
+  client.on("connect", mqttConnect);
+  client.on("message", mqttMessaggio);
+  client.on("error", mqttError);
+  client.on("connect_failed", mqttConnectFailed);
+
+  bottGhiaccio = new Bottone(largh/10, alt-alt/5.5, "");
+  bottGhiaccio.box.changed(allGhiaccioCambiato);
+
+  bottTrattore = new Bottone(largh/10, alt-alt/7, "");
+  bottTrattore.box.changed(allTrattoreCambiato);
+  
+  let bottCambiaNome = createButton("Cambia Nome");
+  bottCambiaNome.position(largh/4, alt/15+alt/15);
+  bottCambiaNome.size(largh/4,alt/30);
+  bottCambiaNome.mousePressed(cambiaNome);
+  nome = getItem("Nome");
+  console.log(nome);
+  if (nome == null) {
+    nome = prompt("Come ti chiami?");
+    storeItem("Nome", nome);
+  }
+
   textAlign(CENTER);
   ellipseMode(CENTER);
 }
@@ -176,6 +175,17 @@ function draw() {
       colCentroSemGiu = "black";
       colBassoSemGiu = "black";
     }
+    MqttStatus();
+    text("Stato MQTT " + gotMqtt, 100, 190);
+    push();
+    fill("orange");
+    textAlign(CENTER,CENTER);
+    rect(largh/4,alt/15,largh/4,alt/15);
+    fill("black");
+    text("Benvenuto \n" + nome, largh/4+largh/4/2,alt/15+alt/15/2);
+    pop();
+    bottGhiaccio.etichetta(etichettaGhiaccio);
+    bottTrattore.etichetta(etichettaTrattore);
   }
   scriviMessaggio(scritta, coloreScritta, alt / 40);
   if (statoSem != statoSemOld) {
@@ -244,6 +254,8 @@ function gotError() {
   //throw new Error("Error caricando microservizio tempo");
   gotServerTime = 0;
   errorMessage = "Error caricando microservizio tempo";
+  loadJSON("https://worldtimeapi.org/api/ip", gotData, gotError);
+
   //thisFunctionDoesNotExistAndWasCreatedWithTheOnlyPurposeOfStopJavascriptExecution
 }
 
@@ -293,35 +305,18 @@ function semaforo() {
   return messaggio;
 }
 
-function disegnaSemaforo(
-  x,
-  y,
-  colAlto,
-  colMezzo,
-  colBasso,
-  descrizione,
-  tempoAttesa
-) {
+function disegnaSemaforo(x,y,colAlto,colMezzo,colBasso,descrizione,tempoAttesa) {
   fill("darkGreen"); //grey color
   larghezza = largh / 4;
   altezza = alt / 2.5;
   rect(x, y, larghezza, altezza, 20); //traffic light base
   fill(colAlto);
-  ellipse(x + larghezza / 2, y + altezza / 4, larghezza / 2.1, larghezza / 2.1); //first light
+  ellipse(x + larghezza / 2, y + altezza / 4, larghezza / 1.2, altezza / 4.2); //first light
   fill(colMezzo);
-  ellipse(
-    x + larghezza / 2,
-    y + (altezza / 4) * 2,
-    larghezza / 2.1,
-    larghezza / 2.1
-  ); //second light
+  ellipse(x + larghezza / 2,y + (altezza / 4) * 2,larghezza / 1.2,altezza / 4.2 ); //second light
   fill(colBasso);
   ellipse(
-    x + larghezza / 2,
-    y + (altezza / 4) * 3,
-    larghezza / 2.1,
-    larghezza / 2.1
-  ); //third code
+    x + larghezza / 2,y + (altezza / 4) * 3,larghezza / 1.2,altezza / 4.2  ); //third code
   textSize(alt / 40);
   fill("orange");
   text(descrizione + " " + tempoAttesa, x + larghezza / 2, y + altezza / 10);
@@ -341,22 +336,167 @@ function convertUnixTime(uTime) {
 
 function debug() {
   push();
-  textSize(alt / 50);
-  fill(130);
-  text(
-    "Loc: " +
-      convertUnixTime(Date.now() / 1000) +
-      " Rem " +
-      convertUnixTime(time / 1000) +
-      " adj " +
-      dateAdj +
-      " loadJson " +
-      timeLoadJson,
-    largh / 2,
-    (alt / 20) * 17
-  );
   textSize(alt / 60);
-  textAlign(LEFT);
-  text("v 5.0 larg "+largh+" alt "+alt + " "+screen.orientation.type + " " + info(),5,(alt/30) * 28,largh, alt/3);
+  fill(130);
+  text("Loc: " +convertUnixTime(Date.now() / 1000) +" Rem " +convertUnixTime(time / 1000) +" adj " +dateAdj +
+    " loadJson " +timeLoadJson+
+    "\n v 6.0 larg " +largh +" alt " +alt +" " +screen.orientation.type +" " +info()+" MQTT "+gotMqtt,5,(alt / 30) * 28,largh,alt / 3);
   pop();
+}
+
+function cambiaNome() {
+  nome = prompt("Come ti chiami?");
+  storeItem("Nome", nome);
+  console.log("Cambia nome");
+}
+
+function MqttStatus() {
+  gotMqtt = client.connected;
+  if (gotMqtt) {
+//    coloreSfondo = "lightgreen";
+    
+  } else {
+    bottGhiaccio.colore("black");
+    bottTrattore.colore("black");
+//    bottGhiaccio.etichetta("Sistema allarmi non disponibile");
+//    bottTrattore.etichetta("Sistema allarmi non disponibile");
+  }
+  //console.log("matt ", gotMqtt);
+  if (gotMqtt != gotMqttPrev) {
+    gotMqttPrev = gotMqtt;
+    //console.log("Stato MQTT: gotMqtt);
+  }
+}
+
+function mqttConnect() {
+  client.subscribe("ADV/#", function (err) {
+    if (!err) {
+      //client.publish("ADV/Trattore", "ON",{ qos: 0, retain: true });
+      //client.publish("ADV/Trattore", "ON", { retain: true });
+      //allGhiaccio.checked(true);
+    } else {
+      console.log("Error in MQTT subscribe");
+    }
+  });
+}
+
+function allGhiaccioCambiato() {
+  if (bottGhiaccio.box.checked()) {
+    //client.publish("ADV/Ghiaccio", "ON," + nome, { qos: 2, retain: true });
+    bottGhiaccio.colore("red");
+    scriviMqtt("ADV/Ghiaccio", "ON," + nome);
+  } else {
+    scriviMqtt("ADV/Ghiaccio", "OFF," + nome);
+    bottGhiaccio.colore("green");
+    
+  }
+}
+function allTrattoreCambiato() {
+  if (bottTrattore.box.checked()) {
+    scriviMqtt("ADV/Trattore", "ON," + nome);
+    bottTrattore.colore("red");
+    //client.publish("ADV/Trattore", "ON," + nome, { qos: 2, retain: true });
+  } else {
+    //    client.publish("ADV/Trattore", "OFF," + nome, { qos: 2, retain: true });
+    scriviMqtt("ADV/Trattore", "OFF," + nome);
+    bottTrattore.colore("green");
+  }
+}
+
+function scriviMqtt(topic, payload) {
+  if (client.connected) {
+//    client.publish(topic, payload+" "+hour()+":"+minute(),{ qos: 2, retain: true },
+    client.publish(topic, payload+" "+hour()+":"+ minute().toString().padStart(2, '0'),{ qos: 2, retain: true },
+           function (complete) {console.log("publish complete with code: " + complete);},
+      function (error) {
+        console.log("error on publish: " + (error.reason || "unknown"));
+      }
+    );
+  }
+}
+
+function mqttMessaggio(topic, message) {
+  let splitString = split(message.toString(), ",");
+  console.log(topic + " " + message.toString());
+  if (topic == "ADV/Trattore") {
+    if (splitString[0] == "ON") {
+      etichettaTrattore = "Trattore " + splitString[1];
+      bottTrattore.box.checked(true);
+      bottTrattore.colore("red");
+    } else {
+      bottTrattore.box.checked(false);
+      bottTrattore.colore("green");
+      etichettaTrattore = "Trattore ";
+    }
+  }
+  if (topic == "ADV/Ghiaccio") {
+    if (splitString[0] == "ON") {
+      bottGhiaccio.box.checked(true);
+      bottGhiaccio.colore("red");
+      etichettaGhiaccio = "Ghiaccio " + splitString[1];
+    } else {
+      bottGhiaccio.box.checked(false);
+      bottGhiaccio.colore("green");
+      etichettaGhiaccio = "Ghiaccio ";
+    }
+  }
+}
+
+function mqttConnectFailed(message) {
+  console.log("mqtt error ", message);
+}
+
+function mqttError(message) {
+  console.log("mqtt error ", message);
+}
+
+class Bottone {
+  constructor(x, y, etichetta,colore='green') {
+    this.x = x;
+    this.y = y;
+    this.box = createCheckbox();
+    this.box.position(this.x, this.y);
+    this.color=colore;
+  }
+  etichetta(nuovoNome) {
+    this.nome = nuovoNome;
+    push();
+    fill(this.color);
+    rect(0, this.y,largh,alt/30,alt/50);
+    textAlign(LEFT,TOP);
+    fill("black");
+    text(this.nome, this.x+largh/20, this.y);
+    pop();
+    
+  }
+  colore(colore){
+    this.color=colore;
+  }
+}
+
+function changeOrien(e) {
+  const portrait = e.matches;
+  if (portrait) {
+    largh = larghOrig;
+    alt = altOrig;
+    console.log("port");
+  } else {
+    //largh=larghOrig*larghOrig/altOrig*0.7;
+    //alt=larghOrig*0.7;
+    largh = (windowHeight * altOrig) / larghOrig;
+    alt = windowHeight;
+    console.log("land");
+  }
+  resizeCanvas(largh, alt);
+  buttonW.position(5, (alt / 11) * 2);
+  buttonW.style("background-color", "red");
+  buttonW.style("font-size", alt / 50 + "px");
+  buttonW.size(largh / 2, alt / 10);
+
+  buttonAudio.position((largh / 16) * 9, (alt / 10) * 6.4);
+  buttonAudio.style("background-color", "pink");
+  buttonAudio.style("font-size", alt / 40 + "px");
+  buttonAudio.size(largh / 4, alt / 15);
+
+  console.log(largh, alt, windowWidth, windowHeight, larghOrig, altOrig);
 }
