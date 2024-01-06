@@ -89,8 +89,9 @@ function setup() {
   bottTrattore = new Bottone(largh/10, alt-alt/7, "");
   bottTrattore.box.changed(allTrattoreCambiato);
   
-  let bottCambiaNome = createButton("Cambia Nome");
+  bottCambiaNome = createButton("Cambia Nome");
   bottCambiaNome.position(largh/4, alt/15+alt/15);
+  bottCambiaNome.style("font-size", alt / 50 + "px");
   bottCambiaNome.size(largh/4,alt/30);
   bottCambiaNome.mousePressed(cambiaNome);
   nome = getItem("Nome");
@@ -176,7 +177,7 @@ function draw() {
       colBassoSemGiu = "black";
     }
     MqttStatus();
-    text("Stato MQTT " + gotMqtt, 100, 190);
+//    text("Stato MQTT " + gotMqtt, 100, 190);
     push();
     fill("orange");
     textAlign(CENTER,CENTER);
