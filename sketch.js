@@ -78,6 +78,13 @@ function setup() {
   buttonW.style("font-size", alt / 50 + "px");
   buttonW.size(largh / 2, alt / 10);
 
+  bottCambiaNome = createButton("Cambia Nome");
+  bottCambiaNome.position(largh/4, alt/7.5);
+  bottCambiaNome.style("background-color", "darkorange");
+  bottCambiaNome.style("font-size", alt / 50 + "px");
+  bottCambiaNome.size(largh/4,alt/30);
+  bottCambiaNome.mousePressed(cambiaNome);
+  
   client.on("connect", mqttConnect);
   client.on("message", mqttMessaggio);
   client.on("error", mqttError);
@@ -89,11 +96,6 @@ function setup() {
   bottTrattore = new Bottone(largh/10, alt-alt/7, "");
   bottTrattore.box.changed(allTrattoreCambiato);
   
-  bottCambiaNome = createButton("Cambia Nome");
-  bottCambiaNome.position(largh/4, alt/15+alt/15);
-  bottCambiaNome.style("font-size", alt / 50 + "px");
-  bottCambiaNome.size(largh/4,alt/30);
-  bottCambiaNome.mousePressed(cambiaNome);
   nome = getItem("Nome");
   console.log(nome);
   if (nome == null) {
@@ -179,7 +181,7 @@ function draw() {
     MqttStatus();
 //    text("Stato MQTT " + gotMqtt, 100, 190);
     push();
-    fill("orange");
+    fill("yellow");
     textAlign(CENTER,CENTER);
     rect(largh/4,alt/15,largh/4,alt/15);
     fill("black");
