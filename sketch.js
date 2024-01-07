@@ -463,6 +463,7 @@ class Bottone {
   posizione(x,y) {
     this.x=x;
     this.y=y;
+    this.box.position(this.x, this.y);
   }
   etichetta(nuovoNome) {
     this.nome = nuovoNome;
