@@ -460,6 +460,10 @@ class Bottone {
     this.box.position(this.x, this.y);
     this.color=colore;
   }
+  posizione(x,y) {
+    this.x=x;
+    this.y=y;
+  }
   etichetta(nuovoNome) {
     this.nome = nuovoNome;
     push();
@@ -468,8 +472,7 @@ class Bottone {
     textAlign(LEFT,TOP);
     fill("black");
     text(this.nome, this.x+largh/20, this.y);
-    pop();
-    
+    pop(); 
   }
   colore(colore){
     this.color=colore;
@@ -505,6 +508,9 @@ function changeOrien(e) {
   bottCambiaNome.style("font-size", alt / 60 + "px");
   bottCambiaNome.size(largh/4,alt/30);
 
+  bottGhiaccio.posizione(largh/10, alt-alt/5.5);
+  bottTrattore.posizione(largh/10, alt-alt/7);
+  
   
   console.log(largh, alt, windowWidth, windowHeight, larghOrig, altOrig);
 }
