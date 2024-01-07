@@ -494,11 +494,17 @@ function changeOrien(e) {
   buttonW.style("background-color", "red");
   buttonW.style("font-size", alt / 50 + "px");
   buttonW.size(largh / 2, alt / 10);
-
+  
   buttonAudio.position((largh / 16) * 9, (alt / 10) * 6.4);
   buttonAudio.style("background-color", "pink");
   buttonAudio.style("font-size", alt / 40 + "px");
   buttonAudio.size(largh / 4, alt / 15);
 
+  bottCambiaNome.position(largh/4, alt/7.5);
+  bottCambiaNome.style("background-color", "darkorange");
+  bottCambiaNome.style("font-size", alt / 60 + "px");
+  bottCambiaNome.size(largh/4,alt/30);
+
+  
   console.log(largh, alt, windowWidth, windowHeight, larghOrig, altOrig);
 }
